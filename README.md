@@ -1,39 +1,24 @@
-## 介绍
+# STM32F4 标准库 CMake 工程模版
 
-这是应该基于STM32L4系列的CMakeHAL移植到CMake标准库的工程与视频工程基本相似其他系列单片机移植和视频差不多一样
+# 开发环境
+- arm-none-eabi-gcc     14.3.1
+- cmake                 4.1.1
+- make                  3.81
 
-## 依赖项
+## vscode 搭配插件
+- clangd
+- CMake Language Support
+- Cortex-Debug
 
-- cmake
-- make
-- gcc-arm
-- openocd
-
-## vscode搭配插件
-
-1. clangd(代码提示)
-2. CMake Tools(可要可不要)
-3. CMake Language Support(CMake语法提示)
-4. Cortex-Debug(后续openocd断点调试需要)
-
-## 如果不用CMake Tools怎么生成？
-
-进入根目录 build 文件夹（如果没有就创建）
-
+## 构建编译
 ```bash
-cd build
+#正式下载
+make app
+
+#带调试程序
+make debug
 ```
 
-开始构建
+> _日期：2025-09-21_  
+> _作者：讨厌下雨天_  
 
-```bash
-cmake ..
-```
-
-构建成功直接开始编译
-
-```bash
-make
-```
-
-即可生成.bin文件

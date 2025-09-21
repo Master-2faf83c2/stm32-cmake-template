@@ -1,4 +1,4 @@
-#include "debug.h"
+#include "hal_debug.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -24,16 +24,20 @@
 #define GPIO_RX_PIN             GPIO_Pin_10
 #define GPIO_RX_AF_PIN          GPIO_PinSource10
 
-uint8_t U1_TxBuff[U1_TX_SIZE];
-uint8_t U1_RxBuff[U1_RX_SIZE];
-U1_CB U1CB;
+#define U1_TX_SIZE          (512)
+#define U1_RX_SIZE          (1*1024)
+#define U1_RX_MAX           256
+
+uint8_t tx_buff[U1_TX_SIZE];
+uint8_t rx_buff[U1_RX_SIZE];
+RingBuf_t debug_cb;
 
 /**
  * @brief 串口 配置
  * 
  * @param bound 波特率
  */
-void U1_Config(uint32_t bound){
+void debugInitMode(uint32_t bound){
 
     GPIO_CLK_CMD(GPIO_CLK, ENABLE);  // 使能GPIOA时钟
     USART_CLK_CMD(USART_CLK, ENABLE); // 使能USART1时钟
@@ -69,7 +73,7 @@ void U1_Config(uint32_t bound){
  * @brief 串口DMA 配置
  * 
  */
-void U1_DMA_Config(void){
+void debugInitDMA(void){
 
     DMA_InitTypeDef  DMA_InitStructure;
 	
@@ -78,7 +82,7 @@ void U1_DMA_Config(void){
     /* 配置 DMA Stream */
     DMA_InitStructure.DMA_Channel = USART_DMA_CHANNEL;  //通道选择
     DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&USART->DR;//DMA外设地址
-    DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)U1_TxBuff;//DMA 存储器0地址
+    DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)tx_buff;//DMA 存储器0地址
     DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;//存储器到外设模式
     DMA_InitStructure.DMA_BufferSize = 1;//数据传输量 
     DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;//外设非增量模式
@@ -93,7 +97,7 @@ void U1_DMA_Config(void){
     DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;//外设突发单次传输
     DMA_Init(USART_DMA_TX, &DMA_InitStructure);
 
-    DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)U1_RxBuff;
+    DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)rx_buff;
     DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
     DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
     DMA_InitStructure.DMA_BufferSize = U1_RX_MAX+1;
@@ -103,13 +107,12 @@ void U1_DMA_Config(void){
     DMA_Cmd(USART_DMA_RX, ENABLE);     
 }
 
-void U1Rx_PtrInit(void){
-
-    U1CB.URxDataIN  = &U1CB.URxDataPtr[0];
-    U1CB.URxDataOUT = &U1CB.URxDataPtr[0];
-    U1CB.URxDataEND = &U1CB.URxDataPtr[U1_NUM-1];
-    U1CB.URxDataIN->start = U1_RxBuff;
-    U1CB.UxCounter = 0;
+void debugPtrInit(void){
+    debug_cb.DataIn  = &debug_cb.DataPtr[0];
+    debug_cb.DataOut = &debug_cb.DataPtr[0];
+    debug_cb.DataEnd = &debug_cb.DataPtr[RING_BUF_NUM-1];
+    debug_cb.DataIn->start = rx_buff;
+    debug_cb.Counter = 0;
 }
 
 /**
@@ -117,11 +120,11 @@ void U1Rx_PtrInit(void){
  * 
  * @param bound 波特率
  */
-void U1_Init(uint32_t bound){
+void debugInit(uint32_t bound){
 
-    U1_Config(bound);
-    U1_DMA_Config();
-    U1Rx_PtrInit();
+    debugInitMode(bound);
+    debugInitDMA();
+    debugPtrInit();
     USART_DMACmd(USART, USART_DMAReq_Tx, ENABLE);
     USART_DMACmd(USART, USART_DMAReq_Rx, ENABLE);
 }
@@ -131,7 +134,7 @@ void U1_Init(uint32_t bound){
  * 
  * @return uint8_t 中断通道
  */
-uint8_t U1_IRQChannel(void){
+uint8_t debugIrqChannel(void){
 
     return USART_IRQ;
 }
@@ -142,11 +145,11 @@ uint8_t U1_IRQChannel(void){
  * @param format    指定要显示的格式化字符串，范围：ASCII码可见字符组成的字符串
  * @param ...       格式化字符串参数列表
  */
-void debug_Printf(char *format, ...){
+void debugPrintf(char *format, ...){
 
 	va_list arg;							            
 	va_start(arg, format);					            
-	uint16_t datalen = vsprintf((char *)U1_TxBuff, format, arg);			
+	uint16_t datalen = vsprintf((char *)tx_buff, format, arg);			
 	va_end(arg);							           
 
 	DMA_Cmd(USART_DMA_TX, DISABLE);                       
@@ -165,22 +168,21 @@ void USART_IRQHandler(void){
     if (USART_GetITStatus(USART, USART_IT_IDLE) != RESET){
         USART_GetFlagStatus(USART, USART_FLAG_IDLE);
         USART_ReceiveData(USART);
-        U1CB.UxCounter += ((U1_RX_MAX+1) - DMA_GetCurrDataCounter(USART_DMA_RX));
-        U1CB.URxDataIN->end = &U1_RxBuff[U1CB.UxCounter-1];
-        U1CB.URxDataIN ++;
-        if (U1CB.URxDataIN == U1CB.URxDataEND){
-            U1CB.URxDataIN  = &U1CB.URxDataPtr[0];
+        debug_cb.Counter += ((U1_RX_MAX+1) - DMA_GetCurrDataCounter(USART_DMA_RX));
+        debug_cb.DataIn->end = &rx_buff[debug_cb.Counter-1];
+        debug_cb.DataIn ++;
+        if (debug_cb.DataIn == debug_cb.DataEnd){
+            debug_cb.DataIn  = &debug_cb.DataPtr[0];
         }
-        if ((U1_RX_SIZE-U1CB.UxCounter) >= U1_RX_MAX){
-            U1CB.URxDataIN->start = &U1_RxBuff[U1CB.UxCounter];
-        }
-        else {
-            U1CB.URxDataIN->start = U1_RxBuff;
-            U1CB.UxCounter = 0;
+        if ((U1_RX_SIZE-debug_cb.Counter) >= U1_RX_MAX){
+            debug_cb.DataIn->start = &rx_buff[debug_cb.Counter];
+        }else {
+            debug_cb.DataIn->start = rx_buff;
+            debug_cb.Counter = 0;
         }
         DMA_Cmd(USART_DMA_RX, DISABLE);
         DMA_SetCurrDataCounter(USART_DMA_RX, U1_RX_MAX+1);
-        USART_DMA_RX->M0AR = (uint32_t)U1CB.URxDataIN->start;
+        USART_DMA_RX->M0AR = (uint32_t)debug_cb.DataIn->start;
         DMA_Cmd(USART_DMA_RX, ENABLE);
     }
 }

@@ -1,5 +1,5 @@
-#ifndef __SYS_H
-#define __SYS_H
+#ifndef _HAL_SYS_H
+#define _HAL_SYS_H
 
 #include "stm32f4xx.h"
 
@@ -58,12 +58,5 @@
 
 #define PIout(n)   BIT_ADDR(GPIOI_ODR_Addr,n)  //输出 
 #define PIin(n)    BIT_ADDR(GPIOI_IDR_Addr,n)  //输入
-
-typedef struct{
-    uint8_t     *start;
-    uint8_t     *end;
-}UCB_URxBuffptr;
-
-void NVIC_Config(void);
 
 #endif

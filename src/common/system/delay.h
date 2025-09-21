@@ -1,7 +1,7 @@
-#ifndef __DELAY_H
-#define __DELAY_H 		
+#ifndef _DELAY_H
+#define _DELAY_H 		
 	   
-# include "sys.h"	  
+# include "globals.h"  
 
 void delay_us(uint32_t xus);
 void delay_ms(uint32_t xms);

@@ -1,4 +1,4 @@
-# include "timer.h"
+#include "systick.h"
 
 #define TIMER                   TIM7
 #define TIMER_CLK_CMD           RCC_APB1PeriphClockCmd
@@ -6,14 +6,13 @@
 #define TIMER_IRQ               TIM7_IRQn
 #define TIMER_IRQHandler        TIM7_IRQHandler
 
-
 static uint16_t global_times = 0;
 
 /**
  * @brief 全局时间初始化
  * 
  */
-void timer_Init(void){
+void systickInit(void){
 
     TIM_InternalClockConfig(TIMER);
 
@@ -36,7 +35,7 @@ void timer_Init(void){
  * 
  * @return uint8_t 返回中断通道
  */
-uint8_t timer_GetIRQChannel(void){
+uint8_t systickGetIrqChannel(void){
 
     return TIMER_IRQ;
 }
@@ -46,7 +45,7 @@ uint8_t timer_GetIRQChannel(void){
  * 
  * @return uint32_t 
  */
-uint16_t timer_get(void){
+uint16_t systickGet(void){
 
     return global_times;
 }
@@ -57,12 +56,13 @@ uint16_t timer_get(void){
  * @param c 设置的时间周期
  * @return uint32_t c与时间周期剩余的时间
  */
-uint16_t timer_get_sub(uint16_t c){
+uint16_t systickGetSub(uint16_t c){
 
-    if(c > global_times)
-		c -= global_times;
-	else
-		c = 0;
+    if(c > global_times){
+        c -= global_times;
+    }else{
+        c = 0;
+    }
 	return c;
 }
 
@@ -72,7 +72,7 @@ uint16_t timer_get_sub(uint16_t c){
  * @param loading_time  需要装载的时间
  * @param time          设置的周期
  */
-void timer_loading(uint16_t *loading_time, uint16_t time){
+void systickLoading(uint16_t *loading_time, uint16_t time){
 
     *loading_time = global_times + time;
 }
