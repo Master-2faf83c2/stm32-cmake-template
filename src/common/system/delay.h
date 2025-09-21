@@ -1,7 +1,7 @@
 #ifndef _DELAY_H
 #define _DELAY_H
 
-#include "sys.h"
+#include "globals.h"
 
 /*----------------------函数定义----------------------*/
 void delay_us(uint32_t xus);                    //微妙延时

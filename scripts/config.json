@@ -1,6 +1,0 @@
-{
-    "openocd":{
-        "target": "stm32f4x",
-        "path": "openocd.exe"
-    }
-}

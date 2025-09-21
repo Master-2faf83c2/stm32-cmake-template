@@ -1,0 +1,4 @@
+CompileFlags:
+    Add: 
+        #填自己工具链的头文件路径否则clangd会找不到stdio.h
+        - -I/Applications/ArmGNUToolchain/14.3.rel1/arm-none-eabi/arm-none-eabi/include

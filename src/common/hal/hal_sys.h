@@ -1,5 +1,5 @@
-#ifndef __SYS_H
-#define __SYS_H
+#ifndef _HAL_SYS_H
+#define _HAL_SYS_H
 
 #include "stm32l1xx.h"
 
@@ -28,7 +28,5 @@
 
 #define PCout(n)   BIT_ADDR(GPIOC_ODR_Addr,n)  //输出 
 #define PCin(n)    BIT_ADDR(GPIOC_IDR_Addr,n)  //输入 
-
-void NVIC_Config(void);
 
 #endif
