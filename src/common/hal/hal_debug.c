@@ -9,21 +9,19 @@
 #define USART_DMA_CLK           RCC_AHBPeriph_DMA1
 
 #define GPIO_CLK_CMD            RCC_AHBPeriphClockCmd
-#define GPIO_CLK                RCC_AHBPeriph_GPIOA
+#define GPIO_CLK                RCC_APB2Periph_GPIOA
 #define GPIO_PORT               GPIOA
 #define GPIO_AF                 GPIO_AF_USART1
 
 #define USART_DMA_TX            DMA1_Channel4
 #define USART_DMA_TX_TC_FLAG    DMA1_FLAG_TC4
 #define GPIO_TX_PIN             GPIO_Pin_9
-#define GPIO_TX_AF_PIN          GPIO_PinSource9
 
 #define USART_IRQ               USART1_IRQn
 #define USART_IRQHandler        USART1_IRQHandler
 #define USART_DMA_RX            DMA1_Channel5
 #define USART_DMA_RX_TC_FLAG    DMA1_FLAG_TC5
 #define GPIO_RX_PIN             GPIO_Pin_10
-#define GPIO_RX_AF_PIN          GPIO_PinSource10
 
 #define U1_TX_SIZE          (512)
 #define U1_RX_SIZE          (1*1024)
@@ -34,21 +32,17 @@ uint8_t debug_rx_buff[U1_RX_SIZE];
 RingBuf_t debug_cb;
 
 void debugInitMode(uint32_t bound){
-    GPIO_CLK_CMD(GPIO_CLK, ENABLE);
-    USART_CLK_CMD(USART_CLK, ENABLE);
+    RCC_APB2PeriphClockCmd(GPIO_CLK, ENABLE);
+    RCC_APB2PeriphClockCmd(USART_CLK, ENABLE);
 
     GPIO_InitTypeDef GPIO_InitStructure;
-    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;                   
-    GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;            
-    GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;          
-    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_40MHz;
-
-    GPIO_PinAFConfig(GPIO_PORT,GPIO_TX_AF_PIN,GPIO_AF);
-    GPIO_InitStructure.GPIO_Pin = GPIO_TX_PIN;           
+    GPIO_InitStructure.GPIO_Pin   = GPIO_TX_PIN;
+    GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
+    GPIO_InitStructure.GPIO_Mode  = GPIO_Mode_AF_PP;
     GPIO_Init(GPIO_PORT, &GPIO_InitStructure);
 
-    GPIO_PinAFConfig(GPIO_PORT,GPIO_RX_AF_PIN,GPIO_AF);
-    GPIO_InitStructure.GPIO_Pin = GPIO_RX_PIN;           
+    GPIO_InitStructure.GPIO_Pin  = GPIO_RX_PIN;
+    GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
     GPIO_Init(GPIO_PORT, &GPIO_InitStructure);
 
     USART_InitTypeDef USART_InitStructure;

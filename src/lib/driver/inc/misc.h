@@ -2,26 +2,19 @@
   ******************************************************************************
   * @file    misc.h
   * @author  MCD Application Team
-  * @version V1.3.1
-  * @date    20-April-2015
+  * @version V3.6.2
+  * @date    17-September-2021
   * @brief   This file contains all the functions prototypes for the miscellaneous
   *          firmware library functions (add-on to CMSIS functions).
   ******************************************************************************
   * @attention
   *
-  * <h2><center>&copy; COPYRIGHT 2015 STMicroelectronics</center></h2>
+  * Copyright (c) 2012 STMicroelectronics.
+  * All rights reserved.
   *
-  * Licensed under MCD-ST Liberty SW License Agreement V2, (the "License");
-  * You may not use this file except in compliance with the License.
-  * You may obtain a copy of the License at:
-  *
-  *        http://www.st.com/software_license_agreement_liberty_v2
-  *
-  * Unless required by applicable law or agreed to in writing, software 
-  * distributed under the License is distributed on an "AS IS" BASIS, 
-  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  * See the License for the specific language governing permissions and
-  * limitations under the License.
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
   *
   ******************************************************************************
   */
@@ -35,9 +28,9 @@
 #endif
 
 /* Includes ------------------------------------------------------------------*/
-#include "stm32l1xx.h"
+#include "stm32f10x.h"
 
-/** @addtogroup STM32L1xx_StdPeriph_Driver
+/** @addtogroup STM32F10x_StdPeriph_Driver
   * @{
   */
 
@@ -45,7 +38,9 @@
   * @{
   */
 
-/* Exported types ------------------------------------------------------------*/
+/** @defgroup MISC_Exported_Types
+  * @{
+  */
 
 /** 
   * @brief  NVIC Init Structure definition  
@@ -56,7 +51,7 @@ typedef struct
   uint8_t NVIC_IRQChannel;                    /*!< Specifies the IRQ channel to be enabled or disabled.
                                                    This parameter can be a value of @ref IRQn_Type 
                                                    (For the complete STM32 Devices IRQ Channels list, please
-                                                    refer to stm32l1xx.h file) */
+                                                    refer to stm32f10x.h file) */
 
   uint8_t NVIC_IRQChannelPreemptionPriority;  /*!< Specifies the pre-emption priority for the IRQ channel
                                                    specified in NVIC_IRQChannel. This parameter can be a value
@@ -70,10 +65,17 @@ typedef struct
                                                    will be enabled or disabled. 
                                                    This parameter can be set either to ENABLE or DISABLE */   
 } NVIC_InitTypeDef;
+ 
+/**
+  * @}
+  */
 
-/**  
-  *
-@verbatim   
+/** @defgroup NVIC_Priority_Table 
+  * @{
+  */
+
+/**
+@code  
  The table below gives the allowed values of the pre-emption priority and subpriority according
  to the Priority Grouping configuration performed by NVIC_PriorityGroupConfig function
   ============================================================================================================================
@@ -94,10 +96,12 @@ typedef struct
    NVIC_PriorityGroup_4  |                0-15               |            0                |   4 bits for pre-emption priority
                          |                                   |                             |   0 bits for subpriority                       
   ============================================================================================================================
-@endverbatim
+@endcode
 */
 
-/* Exported constants --------------------------------------------------------*/
+/**
+  * @}
+  */
 
 /** @defgroup MISC_Exported_Constants
   * @{
@@ -154,7 +158,7 @@ typedef struct
 
 #define IS_NVIC_SUB_PRIORITY(PRIORITY)  ((PRIORITY) < 0x10)
 
-#define IS_NVIC_OFFSET(OFFSET)  ((OFFSET) < 0x0005FFFF)
+#define IS_NVIC_OFFSET(OFFSET)  ((OFFSET) < 0x000FFFFF)
 
 /**
   * @}
@@ -176,8 +180,17 @@ typedef struct
   * @}
   */
 
-/* Exported macro ------------------------------------------------------------*/
-/* Exported functions ------------------------------------------------------- */ 
+/** @defgroup MISC_Exported_Macros
+  * @{
+  */
+
+/**
+  * @}
+  */
+
+/** @defgroup MISC_Exported_Functions
+  * @{
+  */
 
 void NVIC_PriorityGroupConfig(uint32_t NVIC_PriorityGroup);
 void NVIC_Init(NVIC_InitTypeDef* NVIC_InitStruct);
@@ -199,4 +212,7 @@ void SysTick_CLKSourceConfig(uint32_t SysTick_CLKSource);
   * @}
   */
 
-/************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+/**
+  * @}
+  */
+

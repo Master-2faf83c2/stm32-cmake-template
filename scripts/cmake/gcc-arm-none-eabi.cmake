@@ -22,7 +22,7 @@ set(CMAKE_EXECUTABLE_SUFFIX_CXX     ".elf")
 set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 # MCU specific flags
-set(TARGET_FLAGS "-mcpu=cortex-m3 ")
+set(TARGET_FLAGS "-mcpu=cortex-m3 -mthumb")
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${TARGET_FLAGS}")
 set(CMAKE_ASM_FLAGS "${CMAKE_C_FLAGS} -x assembler-with-cpp -MMD -MP")

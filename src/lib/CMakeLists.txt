@@ -1,11 +1,11 @@
 file(GLOB_RECURSE FIND_FILE
-    ${CMAKE_CURRENT_LIST_DIR}/cmsis/startup/startup_stm32l1xx_md.s
+    ${CMAKE_CURRENT_LIST_DIR}/cmsis/startup/startup_stm32f10x_md.s
     ${CMAKE_CURRENT_LIST_DIR}/cmsis/*.c
     ${CMAKE_CURRENT_LIST_DIR}/driver/src/*.c
 )
 
 set_property(GLOBAL APPEND PROPERTY ALL_DEFINE 
-    STM32L1XX_MD
+    STM32F10X_MD
     USE_STDPERIPH_DRIVER
 )
 
