@@ -1,27 +1,49 @@
 cmake_minimum_required(VERSION 3.22)
 
-#默认构建目标
-set(DEFAULT_TARGET "application")
+#
+# This file is generated only once,
+# and is not re-generated if converter is called multiple times.
+#
+# User is free to modify the file as much as necessary
+#
 
-set(CMAKE_C_STANDARD 11)            
+# Setup compiler settings
+set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
+set(DEFAULT_TARGET "app")
+
+# Define the build type
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE "Debug")
+endif()
+
+# Set the project name
 if(DEFINED TARGET_NAME)
     set(CMAKE_PROJECT_NAME ${TARGET_NAME})
 else()
     set(CMAKE_PROJECT_NAME ${DEFAULT_TARGET})
 endif()
 
+# Include toolchain file
+include("cmake/gcc-arm-none-eabi.cmake")
+
+# Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
-include("${CMAKE_SOURCE_DIR}/scripts/cmake/gcc-arm-none-eabi.cmake")
-
+# Core project settings
 project(${CMAKE_PROJECT_NAME})
-message("构建目标: ${CMAKE_PROJECT_NAME}, 编译类型: ${CMAKE_BUILD_TYPE}")
+message("Build type: " ${CMAKE_BUILD_TYPE})
 
-#告诉CMake 需要支持C 和 汇编
+# Enable CMake support for ASM and C languages
 enable_language(C ASM)
+
+# Create an executable object type
+add_executable(${CMAKE_PROJECT_NAME})
+
+# Add STM32CubeMX generated sources
+add_subdirectory(cmake/stm32cubemx)
 
 set_property(GLOBAL APPEND PROPERTY ALL_SOURCES "")
 set_property(GLOBAL APPEND PROPERTY ALL_INCLUDE "")
@@ -37,23 +59,38 @@ message("宏定义: ${ALL_DEFINE}")
 message("头文件: ${ALL_INCLUDE}")
 message("源文件: ${ALL_SOURCES}")
 
-add_executable(${PROJECT_NAME} ${ALL_SOURCES})
-target_include_directories(${PROJECT_NAME} PRIVATE ${ALL_INCLUDE})
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${ALL_DEFINE})
+# Link directories setup
+target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
+    # Add user defined library search paths
+)
 
-set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES ADDITIONAL_CLEAN_FILES ${CMAKE_PROJECT_NAME}.map)
+# Add sources to executable
+target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+    # Add user sources here
+    ${ALL_SOURCES}
+)
 
-if((CMAKE_C_STANDARD EQUAL 90) OR (CMAKE_C_STANDARD EQUAL 99))
-    message(ERROR "Generated code requires C11 or higher")
-endif()
+# Add include paths
+target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
+    # Add user defined include paths
+    ${ALL_INCLUDE}
+)
+
+# Add project symbols (macros)
+target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
+    # Add user defined symbols
+    ${ALL_DEFINE}
+)
+
+# Add linked libraries
+target_link_libraries(${CMAKE_PROJECT_NAME}
+    stm32cubemx
+
+    # Add user defined libraries
+)
 
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMAND arm-none-eabi-objcopy -O binary ${CMAKE_PROJECT_NAME}.elf ${CMAKE_PROJECT_NAME}.bin
     COMMENT "Generating ${CMAKE_PROJECT_NAME}.bin"
 )
 
-add_custom_target(merge_compile_commands ALL
-    COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/scripts/merge_compile_commands.sh
-    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    COMMENT "Merging compile_commands.json from app and bootloader"
-)
