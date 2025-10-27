@@ -13,6 +13,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
 set(DEFAULT_TARGET "app")
+set(SCRIPTS_DIR "${CMAKE_CURRENT_LIST_DIR}/scripts")
 
 # Define the build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -94,3 +95,9 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMENT "Generating ${CMAKE_PROJECT_NAME}.bin"
 )
 
+add_custom_target(merge_compile_commands ALL
+    COMMAND python ${SCRIPTS_DIR}/merge_compile_commands.py
+    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+    COMMENT "merge compile_commands.json 文件"
+    DEPENDS ${CMAKE_PROJECT_NAME}
+)
