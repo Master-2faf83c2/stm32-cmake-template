@@ -31,6 +31,8 @@ endif()
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
+include("${CMAKE_SOURCE_DIR}/cmake/gcc-arm-none-eabi.cmake")
+
 # Core project settings
 project(${CMAKE_PROJECT_NAME})
 message("Build type: " ${CMAKE_BUILD_TYPE})
@@ -96,6 +98,6 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
 add_custom_target(merge_compile_commands ALL
     COMMAND python ${SCRIPTS_DIR}/merge_compile_commands.py
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    COMMENT "merge compile_commands.json 文件"
+    COMMENT "merge compile_commands.json file"
     DEPENDS ${CMAKE_PROJECT_NAME}
 )
