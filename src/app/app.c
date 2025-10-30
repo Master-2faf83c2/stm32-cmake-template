@@ -11,4 +11,5 @@ void appLoop(void){
     HAL_Delay(1000);
     HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
     HAL_Delay(1000);
+    usbPrintf("你好世界!\r\n");
 }
