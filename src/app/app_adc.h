@@ -4,8 +4,8 @@
 #include "global.h"
 
 void appAdcInit(void);
+void appAdcTest(void);
 
 uint8_t appAdcGetAcc(void);
-float appAdcGetVoltage(void);
 
 #endif

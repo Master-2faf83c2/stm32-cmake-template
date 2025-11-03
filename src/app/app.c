@@ -9,11 +9,6 @@ void appInit(void){
 }
 
 void appLoop(void){
-    if (appAdcGetAcc()){
-        // for (uint16_t i = 0; i < 4096; i ++){
-        //     appDebugPrintf("adc_buf1[%d] = %d\r\n", i, adc_buf1[i]);
-        // }
-        appDebugPrintf("ADC 电压: %.3f V\r\n", appAdcGetVoltage());
-    }
+    appAdcTest();
 }
 

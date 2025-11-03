@@ -19,7 +19,4 @@ typedef struct {
     uint16_t        Counter;                        //数据计数
 } RingBuf_t;
 
-// extern volatile uint16_t adc_buf1[4096];
-extern uint16_t adc_buf1[4096];
-
 #endif
