@@ -47,16 +47,19 @@ add_executable(${CMAKE_PROJECT_NAME})
 add_subdirectory(cmake/stm32cubemx)
 
 set_property(GLOBAL APPEND PROPERTY ALL_SOURCES "")
+set_property(GLOBAL APPEND PROPERTY ALL_LINK "")
 set_property(GLOBAL APPEND PROPERTY ALL_INCLUDE "")
 set_property(GLOBAL APPEND PROPERTY ALL_DEFINE "")
 
 add_subdirectory(src)
 
 get_property(ALL_SOURCES GLOBAL PROPERTY ALL_SOURCES)
+get_property(ALL_LINK GLOBAL PROPERTY ALL_LINK)
 get_property(ALL_INCLUDE GLOBAL PROPERTY ALL_INCLUDE)
 get_property(ALL_DEFINE  GLOBAL PROPERTY ALL_DEFINE)
 
 message("宏定义: ${ALL_DEFINE}")
+message("链接路径: ${ALL_LINK}")
 message("头文件: ${ALL_INCLUDE}")
 message("源文件: ${ALL_SOURCES}")
 
@@ -88,6 +91,7 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
 
     # Add user defined libraries
+    ${ALL_LINK}
 )
 
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD

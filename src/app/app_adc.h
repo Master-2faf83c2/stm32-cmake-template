@@ -4,6 +4,7 @@
 #include "global.h"
 
 void appAdcInit(void);
+void appFFTLoop(void);
 void appAdcTest(void);
 
 uint8_t appAdcGetAcc(void);

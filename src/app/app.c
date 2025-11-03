@@ -9,6 +9,6 @@ void appInit(void){
 }
 
 void appLoop(void){
-    appAdcTest();
+    appFFTLoop();
 }
 

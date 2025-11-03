@@ -6,6 +6,9 @@
 //缓冲区个数
 #define RING_BUF_NUM        10
 
+//内存地址
+#define RAM_D2              __attribute__((section(".RAM_D2")))
+
 typedef struct{
     uint8_t     *start;
     uint8_t     *end;
