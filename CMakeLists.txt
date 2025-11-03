@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.22)
 
 #默认构建目标
-set(DEFAULT_TARGET "application")
+set(DEFAULT_TARGET "app")
+set(SCRIPTS_DIR "${CMAKE_CURRENT_LIST_DIR}/scripts")
 
 set(CMAKE_C_STANDARD 11)            
 set(CMAKE_C_STANDARD_REQUIRED ON)
@@ -52,8 +53,15 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMENT "Generating ${CMAKE_PROJECT_NAME}.bin"
 )
 
+# add_custom_target(merge_compile_commands ALL
+#     COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/scripts/merge_compile_commands.sh
+#     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+#     COMMENT "Merging compile_commands.json from app and bootloader"
+# )
+
 add_custom_target(merge_compile_commands ALL
-    COMMAND bash ${CMAKE_CURRENT_LIST_DIR}/scripts/merge_compile_commands.sh
+    COMMAND python ${SCRIPTS_DIR}/python/merge_compile_commands.py
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
-    COMMENT "Merging compile_commands.json from app and bootloader"
+    COMMENT "merge compile_commands.json file"
+    DEPENDS ${CMAKE_PROJECT_NAME}
 )
