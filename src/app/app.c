@@ -1,15 +1,19 @@
-#include "main.h"
-#include "hal_debug.h"
+#include "global.h"
+#include "app_debug.h"
+#include "app_adc.h"
 
-void appInit(void){
-    usbPrintf("你好世界!\r\n");
-    HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
+void appInit(void){    
+    appDebugPrintf("定时器触发 ADC 启动\r\n");
+    appAdcInit();
+    appDebugPrintf("初始化完成!\r\n");
 }
 
 void appLoop(void){
-    HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_SET);
-    HAL_Delay(1000);
-    HAL_GPIO_WritePin(GPIOE, GPIO_PIN_3, GPIO_PIN_RESET);
-    HAL_Delay(1000);
-    usbPrintf("你好世界!\r\n");
+    if (appAdcGetAcc()){
+        // for (uint16_t i = 0; i < 4096; i ++){
+        //     appDebugPrintf("adc_buf1[%d] = %d\r\n", i, adc_buf1[i]);
+        // }
+        appDebugPrintf("ADC 电压: %.3f V\r\n", appAdcGetVoltage());
+    }
 }
+

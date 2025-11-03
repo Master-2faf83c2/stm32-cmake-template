@@ -206,6 +206,17 @@ SECTIONS
     libgcc.a ( * )
   }
 
-}
+  
+  /* D2 SRAM (RAM_D2) - for DMA buffers and .RAM_D2 section */
+  .RAM_D2 (NOLOAD) :
+  {
+    . = ALIGN(4);
+    _sram_d2_start = .;
+    *(.RAM_D2)
+    *(.RAM_D2*)
+    . = ALIGN(4);
+    _sram_d2_end = .;
+  } >RAM_D2
 
+}
 
