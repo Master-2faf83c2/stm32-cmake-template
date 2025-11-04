@@ -76,7 +76,7 @@ void appFFTLoop(void){
         }
     }
 
-    float freqRes = Fs / N;
+    float freqRes = (float)Fs / N;
     float peakFreq = peakIndex * freqRes;
 
     appDebugPrintf("Peak Freq = %.2f Hz (Index=%d, Mag=%.3f)\r\n",

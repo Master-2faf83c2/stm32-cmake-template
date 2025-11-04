@@ -3,7 +3,7 @@
 #include "app_adc.h"
 
 void appInit(void){    
-    appDebugPrintf("定时器触发 ADC 启动\r\n");
+    appDebugInit();
     appAdcInit();
     appDebugPrintf("初始化完成!\r\n");
 }
