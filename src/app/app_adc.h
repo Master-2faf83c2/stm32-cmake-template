@@ -3,10 +3,10 @@
 
 #include "global.h"
 
-void appAdcInit(void);
-void appFFTLoop(void);
-void appAdcTest(void);
+void adcInit(void);
+void fftLoop(void);
+void adcTest(void);
 
-uint8_t appAdcGetAcc(void);
+uint8_t adcGetAcc(void);
 
 #endif

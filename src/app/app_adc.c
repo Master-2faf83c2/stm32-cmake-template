@@ -3,15 +3,18 @@
 #include "tim.h"
 #include "adc.h"
 #include "arm_math.h"
+#include <string.h>
 
 #define N                   1024
-#define Fs                  60000
+#define A                   500.0f
+#define Fc                  5000.0f
+#define Fs                  120000
 #define FreqResolution      (Fs / N)
 #define ADC_DMA_SIZE        (N*2)
 
 typedef struct{
-    volatile uint16_t    *start;
-    volatile uint16_t    *end;
+    uint16_t    *start;
+    uint16_t    *end;
 }DMA_BufferPtr16_t;
 
 typedef struct{
@@ -19,7 +22,7 @@ typedef struct{
     uint8_t acc;
 }AdcInfo_t;
 
-RAM_D2 volatile uint16_t adc_buf[ADC_DMA_SIZE];
+RAM_D2 uint16_t adc_buf[ADC_DMA_SIZE];
 // RFFT 输出长度=N
 RAM_D2 float fft_out[N];
 // 幅度结果
@@ -30,32 +33,42 @@ float fft_in[N];
 
 arm_rfft_fast_instance_f32 fft_inst;
 
-static void appAdcInfoInit(void){
+static void adcInfoInit(void){
+    memset(adc_buf, 0, ADC_DMA_SIZE * sizeof(uint16_t));
+    memset(fft_out, 0, N * sizeof(float));
+    memset(fft_mag, 0, (N/2) * sizeof(float));
+
     adc_info.acc = 0;
     adc_info.ptr.start = &adc_buf[0];
     adc_info.ptr.end = &adc_buf[N-1];
 }
 
-void appAdcInit(void){
-    appAdcInfoInit();
+void adcInit(void){
+    adcInfoInit();
     arm_rfft_fast_init_f32(&fft_inst, N);
     HAL_StatusTypeDef res = HAL_ADCEx_Calibration_Start(&hadc1, ADC_CALIB_OFFSET_LINEARITY, ADC_SINGLE_ENDED);
     if (res != HAL_OK){
-        appDebugPrintf("ADC 校准失败!\r\n");
+        debugPrintf("ADC 校准失败!\r\n");
     }
     res = HAL_ADC_Start_DMA(&hadc1,(uint32_t *)&adc_buf, ADC_DMA_SIZE);
     if (res != HAL_OK){
-        appDebugPrintf("ADC DMA 初始化失败!\r\n");
+        debugPrintf("ADC DMA 初始化失败!\r\n");
     }
     HAL_TIM_Base_Start_IT(&htim3);
 }
 
-void appFFTLoop(void){
-    if (!appAdcGetAcc())
+void fftLoop(void){
+    if (!adcGetAcc())
         return;
-    volatile uint16_t *p = adc_info.ptr.start;
+    uint16_t *p = adc_info.ptr.start;
+    float sum = 0;
     for (int i = 0; i < N; i++) {
-        fft_in[i] = ((float)p[i]) * (3.3f / 65535.0f);  // 16bit ADC 转换到电压
+        sum += p[i];
+    }
+    float offset = sum / N; 
+    for (int i = 0; i < N; i++) {
+        // float carrier = A * arm_sin_f32(2.0f * PI * Fc * ((float)i) / Fs);
+        fft_in[i] = ((float)p[i]) - offset;
     }
 
     arm_rfft_fast_f32(&fft_inst, fft_in, fft_out, 0);
@@ -79,20 +92,21 @@ void appFFTLoop(void){
     float freqRes = (float)Fs / N;
     float peakFreq = peakIndex * freqRes;
 
-    appDebugPrintf("Peak Freq = %.2f Hz (Index=%d, Mag=%.3f)\r\n",
-        peakFreq, peakIndex, peakValue);
+    debugPrintf("%.2f\r\n",
+        peakFreq);
 }
 
-void appAdcTest(void){
-    if (!appAdcGetAcc())
+void adcTest(void){
+    if (!adcGetAcc())
         return;
     volatile uint16_t *p = adc_info.ptr.start;
     for (uint32_t i = 0; i < N; i ++){
-        appDebugPrintf("adc_buf[%d]: %d\r\n", i, p[i]);
+        debugPrintf("adc_buf[%d]: %d\r\n", i, p[i]);
+        // debugPrintf("%d\r\n", p[i]);
     }
 }
 
-uint8_t appAdcGetAcc(void){
+uint8_t adcGetAcc(void){
     if (adc_info.acc){
         adc_info.acc = 0;
         return 1;

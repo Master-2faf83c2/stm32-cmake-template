@@ -1,8 +1,7 @@
 CompileFlags:
   Add:
+    # Windows 示例：
+    - -IC:\Software\Work\gcc-arm\arm-gnu-toolchain-11.3.rel1-mingw-w64-i686-arm-none-eabi\arm-none-eabi\include
     # 填自己工具链的头文件路径，否则 clangd 会找不到 stdio.h
     # macOS 示例：
-    - -I/Applications/ArmGNUToolchain/14.3.rel1/arm-none-eabi/arm-none-eabi/include
-
-    # Windows 示例：
-    # - -IC:\Software\Work\gcc-arm\arm-gnu-toolchain-11.3.rel1-mingw-w64-i686-arm-none-eabi\arm-none-eabi\include
+    # - -I/Applications/ArmGNUToolchain/14.3.rel1/arm-none-eabi/arm-none-eabi/include

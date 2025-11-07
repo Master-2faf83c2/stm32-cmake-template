@@ -3,12 +3,14 @@
 #include "app_adc.h"
 
 void appInit(void){    
-    appDebugInit();
-    appAdcInit();
-    appDebugPrintf("初始化完成!\r\n");
+    debugInit();
+    adcInit();
+    debugPrintf("初始化完成!\r\n");
 }
 
 void appLoop(void){
-    appFFTLoop();
+    debugRxRingBufLoop();
+    fftLoop();
+    // adcTest();
 }
 

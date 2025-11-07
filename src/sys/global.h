@@ -4,7 +4,7 @@
 #include "main.h"
 
 //缓冲区个数
-#define RING_BUF_NUM        10
+#define RING_BUF_NUM        20
 
 //内存地址
 #define RAM_D2              __attribute__((section(".RAM_D2")))

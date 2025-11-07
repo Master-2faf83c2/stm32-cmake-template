@@ -12,7 +12,8 @@ typedef struct {
     bool        tx_busy;
 } DebugRingBuf_t;
 
-void appDebugInit(void);
-void appDebugPrintf(const char *format, ...);
+void debugInit(void);
+void debugRxRingBufLoop(void);
+void debugPrintf(const char *format, ...);
 
 #endif
