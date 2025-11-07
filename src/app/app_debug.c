@@ -40,8 +40,8 @@ static void DebugTxCallback(void){
     }
 }
 
-static void DebugRxCallback(void){
-    debug_cb.rx.Counter += ((DEBUG_RX_MAX+1) - __HAL_DMA_GET_COUNTER(&hdma_usart1_rx));
+static void DebugRxCallback(uint16_t pos){
+    debug_cb.rx.Counter += ((DEBUG_RX_MAX+1) - pos);
     debug_cb.rx.DataIn->end = &rx_buff[debug_cb.rx.Counter-1];
     debug_cb.rx.DataIn ++;
     if (debug_cb.rx.DataIn == debug_cb.rx.DataEnd){
@@ -54,8 +54,7 @@ static void DebugRxCallback(void){
         debug_cb.rx.DataIn->start = rx_buff;
         debug_cb.rx.Counter = 0;
     }
-
-    // HAL_UART_Receive_DMA();
+    HAL_UARTEx_ReceiveToIdle_DMA(&huart1, debug_cb.rx.DataIn->start, sizeof(debug_cb.rx.DataIn->start));
 }
 
 static void SendDataBuff(uint8_t *data, uint16_t len){
@@ -89,7 +88,6 @@ void appDebugPrintf(const char *format, ...){
     uint32_t length;
     uint8_t arg_buff[DEBUG_TX_SIZE];
     
-    
     va_start(args, format);
     length = vsnprintf((char *)arg_buff, DEBUG_TX_SIZE, (char *)format, args);
     va_end(args);
@@ -103,14 +101,8 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart) {
     }
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Pos) {
     if (huart->Instance == USART1) {
-        DebugRxCallback();
+        DebugRxCallback(Pos);
     }
-}
-
-void HAL_UARTEx_RxEventCallback(UART_HandleTypeDef *huart, uint16_t Pos)
-{
-    // Pos = 本次接收到的数据长度
-    // process_data(rx_buf, Pos);
 }
