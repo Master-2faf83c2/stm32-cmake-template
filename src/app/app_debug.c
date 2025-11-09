@@ -107,8 +107,8 @@ void debugPrintf(const char *format, ...){
     length = vsnprintf((char *)arg_buff, DEBUG_TX_SIZE, (char *)format, args);
     va_end(args);
 
-    sendDataBuff(arg_buff, length);
-    // while(HAL_UART_Transmit(&huart1, arg_buff, length, HAL_MAX_DELAY) != HAL_OK);
+    // sendDataBuff(arg_buff, length);
+    while(HAL_UART_Transmit(&huart1, arg_buff, length, HAL_MAX_DELAY) != HAL_OK);
 }
 
 //中断函数

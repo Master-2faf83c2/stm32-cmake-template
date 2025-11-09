@@ -1,5 +1,6 @@
 #include "app_adc.h"
 #include "app_debug.h"
+#include "fir_coeffs.h"
 #include "tim.h"
 #include "adc.h"
 #include "arm_math.h"
@@ -28,10 +29,13 @@ RAM_D2 float fft_out[N];
 // 幅度结果
 RAM_D2 float fft_mag[N/2];
 
+float fir_state[NUM_TAPS + 1];
+
 AdcInfo_t adc_info;
 float fft_in[N];      
 
 arm_rfft_fast_instance_f32 fft_inst;
+arm_fir_instance_f32 fir;
 
 static void adcInfoInit(void){
     memset(adc_buf, 0, ADC_DMA_SIZE * sizeof(uint16_t));
@@ -46,6 +50,7 @@ static void adcInfoInit(void){
 void adcInit(void){
     adcInfoInit();
     arm_rfft_fast_init_f32(&fft_inst, N);
+    arm_fir_init_f32(&fir, NUM_TAPS, firCoeffs, fir_state, N);
     HAL_StatusTypeDef res = HAL_ADCEx_Calibration_Start(&hadc1, ADC_CALIB_OFFSET_LINEARITY, ADC_SINGLE_ENDED);
     if (res != HAL_OK){
         debugPrintf("ADC 校准失败!\r\n");
@@ -61,14 +66,10 @@ void fftLoop(void){
     if (!adcGetAcc())
         return;
     uint16_t *p = adc_info.ptr.start;
-    float sum = 0;
-    for (int i = 0; i < N; i++) {
-        sum += p[i];
-    }
-    float offset = sum / N; 
     for (int i = 0; i < N; i++) {
         // float carrier = A * arm_sin_f32(2.0f * PI * Fc * ((float)i) / Fs);
-        fft_in[i] = ((float)p[i]) - offset;
+        float x = (float)p[i] - 2048.0f;
+        arm_fir_f32(&fir, &x, &fft_in[i], 1);
     }
 
     arm_rfft_fast_f32(&fft_inst, fft_in, fft_out, 0);
@@ -101,7 +102,7 @@ void adcTest(void){
         return;
     volatile uint16_t *p = adc_info.ptr.start;
     for (uint32_t i = 0; i < N; i ++){
-        debugPrintf("adc_buf[%d]: %d\r\n", i, p[i]);
+        debugPrintf("%d\r\n", i, p[i]);
         // debugPrintf("%d\r\n", p[i]);
     }
 }
