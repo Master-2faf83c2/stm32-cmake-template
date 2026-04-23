@@ -21,5 +21,4 @@ make debug
 ```
 
 > _日期：2025-10-27_  
-> _作者：PointerMaster_  
-
+> _作者：RainHater_  

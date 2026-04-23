@@ -4,11 +4,11 @@ file(GLOB_RECURSE FIND_FILE
 
 set_property(GLOBAL APPEND PROPERTY ALL_INCLUDE 
     ${CMAKE_CURRENT_LIST_DIR}
-    ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/DSP/Include
+    ${CMAKE_SOURCE_DIR}/hal/Drivers/CMSIS/DSP/Include
 )
 
 set_property(GLOBAL APPEND PROPERTY ALL_LINK 
-   ${CMAKE_SOURCE_DIR}/Drivers/CMSIS/DSP/Lib/GCC/libarm_cortexM7lfsp_math.a
+   ${CMAKE_SOURCE_DIR}/hal/Drivers/CMSIS/DSP/Lib/GCC/libarm_cortexM7lfsp_math.a
 )
 
 set_property(

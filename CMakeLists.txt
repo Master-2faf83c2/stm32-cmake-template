@@ -31,7 +31,7 @@ endif()
 # Enable compile command to ease indexing with e.g. clangd
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
-include("${CMAKE_SOURCE_DIR}/cmake/gcc-arm-none-eabi.cmake")
+include("${CMAKE_SOURCE_DIR}/hal/cmake/gcc-arm-none-eabi.cmake")
 
 # Core project settings
 project(${CMAKE_PROJECT_NAME})
@@ -43,14 +43,12 @@ enable_language(C ASM)
 # Create an executable object type
 add_executable(${CMAKE_PROJECT_NAME})
 
-# Add STM32CubeMX generated sources
-add_subdirectory(cmake/stm32cubemx)
-
 set_property(GLOBAL APPEND PROPERTY ALL_SOURCES "")
 set_property(GLOBAL APPEND PROPERTY ALL_LINK "")
 set_property(GLOBAL APPEND PROPERTY ALL_INCLUDE "")
 set_property(GLOBAL APPEND PROPERTY ALL_DEFINE "")
 
+add_subdirectory(hal)
 add_subdirectory(src)
 
 get_property(ALL_SOURCES GLOBAL PROPERTY ALL_SOURCES)
