@@ -48,6 +48,7 @@ set_property(GLOBAL APPEND PROPERTY ALL_LINK "")
 set_property(GLOBAL APPEND PROPERTY ALL_INCLUDE "")
 set_property(GLOBAL APPEND PROPERTY ALL_DEFINE "")
 
+add_subdirectory(3rdparty)
 add_subdirectory(hal)
 add_subdirectory(src)
 

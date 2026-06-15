@@ -8,7 +8,7 @@ set_property(GLOBAL APPEND PROPERTY ALL_INCLUDE
 )
 
 set_property(GLOBAL APPEND PROPERTY ALL_LINK 
-   ${CMAKE_SOURCE_DIR}/hal/Drivers/CMSIS/DSP/Lib/GCC/libarm_cortexM7lfsp_math.a
+
 )
 
 set_property(
