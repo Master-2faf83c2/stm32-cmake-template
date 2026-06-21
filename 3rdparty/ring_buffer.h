@@ -2,6 +2,7 @@
 #define _RING_BUFFER_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 //缓冲区个数
 #define RING_BUF_NUM        20
@@ -19,7 +20,12 @@ typedef struct {
     uint16_t        Counter;                        //数据计数
 } RingBuf_t;
 
+//初始化回环
 void RingBufferInit(RingBuf_t *cfg, uint8_t *buffer, uint16_t length);
-void RingBufferRxCallback(uint16_t pos, uint8_t *buffer);
+//发生回调函数 dma_transmit: 
+bool RingBufferTxCallback(RingBuf_t *cfg, void(*dma_transmit)(void));
+void RingBufferRxCallback(RingBuf_t *cfg, uint16_t pos, uint8_t *buffer, uint16_t size, uint16_t max_size, void(*dma_receive)(void));
+
+bool RingBufferRxHandle(RingBuf_t *cfg, void(*handle)(uint8_t *data, uint16_t length));
 
 #endif

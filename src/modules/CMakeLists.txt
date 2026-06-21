@@ -4,11 +4,6 @@ file(GLOB_RECURSE FIND_FILE
 
 set_property(GLOBAL APPEND PROPERTY ALL_INCLUDE 
     ${CMAKE_CURRENT_LIST_DIR}
-    ${CMAKE_SOURCE_DIR}/hal/Drivers/CMSIS/DSP/Include
-)
-
-set_property(GLOBAL APPEND PROPERTY ALL_LINK 
-
 )
 
 set_property(
