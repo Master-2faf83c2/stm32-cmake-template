@@ -1,4 +1,5 @@
 CompileFlags:
+  CompilationDatabase: build
   Add:
     # Windows 示例：
     # - -IC:\Software\Work\gcc-arm\arm-gnu-toolchain-11.3.rel1-mingw-w64-i686-arm-none-eabi\arm-none-eabi\include

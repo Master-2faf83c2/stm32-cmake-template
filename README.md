@@ -1,4 +1,4 @@
-# STM32F103C8T6 HAL 库 CMake 工程模板
+# STM32H745XIH6 HAL 库 CMake 工程模板
 
 ---
 
@@ -15,15 +15,23 @@
 | Clangd | VSCode 插件 |
 | CMake Language Support | VSCode 插件 |
 | Cortex-Debug | VSCode 插件 |
+| st-flash | 下载固件 | 
 
 ---
 
 ## 构建编译
 
 ```bash
-#正式下载
-make app
+# 正式下载
+make
 
-#带调试程序
-make debug
+# 下载双核固件
+make flash
+
+# 单独下载
+make flash-cm7
+make flash-cm4
+
+# 只复位
+make reset
 ```

@@ -1,3 +1,4 @@
 CompileFlags:
+  CompilationDatabase: build
   Add:
     - -I/Applications/ArmGNUToolchain/14.3.rel1/arm-none-eabi/arm-none-eabi/include

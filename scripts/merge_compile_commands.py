@@ -1,19 +1,26 @@
 import json
 from pathlib import Path
 
-APP = Path("build/app/compile_commands.json")
-OUT = Path("build/compile_commands.json")
+ROOT = Path(__file__).resolve().parent.parent
 
-if not APP.exists():
-    print(f"❌ 没有找到 {APP}")
-    exit(1)
+INPUTS = [
+    ROOT / "build/app/CM7/compile_commands.json",
+    ROOT / "build/app/CM4/compile_commands.json",
+]
 
-with open(APP, "r", encoding="utf-8") as f:
-    app_data = json.load(f)
+OUTPUT = ROOT / "build" / "compile_commands.json"
 
-merged = app_data
+merged = []
 
-with open(OUT, "w", encoding="utf-8") as f:
-    json.dump(merged, f, indent=2, ensure_ascii=False)
+for path in INPUTS:
+    if not path.exists():
+        raise SystemExit(f"没有找到 {path}")
 
-print(f"✅ 已生成合并后的 {OUT}")
+    with path.open("r", encoding="utf-8") as file:
+        merged.extend(json.load(file))
+
+with OUTPUT.open("w", encoding="utf-8") as file:
+    json.dump(merged, file, indent=2, ensure_ascii=False)
+
+print(f"已生成 {OUTPUT}")
+print(f"共合并 {len(merged)} 条编译命令")
